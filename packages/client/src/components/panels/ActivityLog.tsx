@@ -14,10 +14,10 @@ function EntryRow({ entry }: { entry: ActivityEntry }) {
   const color = TYPE_COLORS[entry.type] ?? 'text-gray-400';
 
   return (
-    <div className="flex items-start gap-2 px-3 py-1 hover:bg-gray-800/50 text-xs">
-      <span className="text-gray-500 shrink-0 font-mono">{time}</span>
+    <div className="flex items-start gap-2 px-3 py-1 text-xs" style={{ color: 'var(--color-text)' }}>
+      <span className="shrink-0 font-mono" style={{ color: 'var(--color-text-muted)' }}>{time}</span>
       <span className={`shrink-0 uppercase font-medium w-16 ${color}`}>{entry.type}</span>
-      <span className="text-gray-300">{entry.message}</span>
+      <span>{entry.message}</span>
     </div>
   );
 }
@@ -27,17 +27,17 @@ export function ActivityLog() {
   const clear = useActivityStore((s) => s.clear);
 
   return (
-    <div className="h-full flex flex-col bg-gray-900/80 border-t border-gray-800">
+    <div className="h-full flex flex-col" style={{ background: 'var(--color-surface-elevated)', borderTop: '1px solid var(--color-border)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-800">
-        <span className="text-xs font-medium text-gray-400">Activity Log</span>
-        <button onClick={clear} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Clear</button>
+      <div className="flex items-center justify-between px-3 py-1.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <span className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>Activity Log</span>
+        <button onClick={clear} className="text-xs transition-colors" style={{ color: 'var(--color-text-muted)' }}>Clear</button>
       </div>
 
       {/* Entries */}
       <div className="flex-1 overflow-y-auto">
         {entries.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-xs text-gray-600">
+          <div className="flex items-center justify-center h-full text-xs" style={{ color: 'var(--color-text-muted)' }}>
             No activity yet. Add agents and create tasks to get started.
           </div>
         ) : (

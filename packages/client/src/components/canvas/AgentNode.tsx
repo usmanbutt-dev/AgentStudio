@@ -55,16 +55,16 @@ function AgentNodeComponent({ data }: NodeProps & { data: AgentNodeData }) {
 
   return (
     <div
-      className={`rounded-xl border border-gray-700/50 bg-gray-900/90 backdrop-blur-sm min-w-[200px] max-w-[280px] overflow-visible cursor-grab active:cursor-grabbing transition-shadow duration-300 ${glowClass}`}
-      style={{ borderTopColor: roleColor, borderTopWidth: 3 }}
+      className={`rounded-xl backdrop-blur-sm min-w-[200px] max-w-[280px] overflow-visible cursor-grab active:cursor-grabbing transition-shadow duration-300 ${glowClass}`}
+      style={{ borderTopColor: roleColor, borderTopWidth: 3, background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)' }}
       onContextMenu={handleContextMenu}
     >
       {/* Header */}
       <div className="px-3 py-2 flex items-center gap-2">
         <div className={`w-2.5 h-2.5 rounded-full ${statusClass} shrink-0`} />
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-gray-100 truncate">{agent.name}</div>
-          <div className="text-xs text-gray-400 truncate">{agent.model}</div>
+          <div className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{agent.name}</div>
+          <div className="text-xs truncate" style={{ color: 'var(--color-text-secondary)' }}>{agent.model}</div>
         </div>
       </div>
 
@@ -76,7 +76,7 @@ function AgentNodeComponent({ data }: NodeProps & { data: AgentNodeData }) {
         >
           {ROLE_LABELS[agent.role]}
         </span>
-        <span className="text-xs text-gray-500 capitalize">{agent.status}</span>
+        <span className="text-xs capitalize" style={{ color: 'var(--color-text-muted)' }}>{agent.status}</span>
       </div>
 
       {/* Current task + streaming output */}
@@ -84,7 +84,8 @@ function AgentNodeComponent({ data }: NodeProps & { data: AgentNodeData }) {
         <div className="px-3 pb-2">
           <div className="text-xs text-blue-400 truncate mb-1">{currentTask.title}</div>
           {lastLines && (
-            <div className="text-[10px] text-gray-500 bg-gray-800/80 rounded p-1.5 font-mono max-h-16 overflow-hidden whitespace-pre-wrap leading-tight">
+            <div className="text-[10px] rounded p-1.5 font-mono max-h-16 overflow-hidden whitespace-pre-wrap leading-tight"
+              style={{ color: 'var(--color-text-muted)', background: 'var(--color-surface-secondary)' }}>
               {lastLines}
             </div>
           )}
@@ -92,21 +93,21 @@ function AgentNodeComponent({ data }: NodeProps & { data: AgentNodeData }) {
       )}
 
       {/* Stats footer */}
-      <div className="px-3 py-1.5 bg-gray-800/50 border-t border-gray-700/30 flex items-center justify-between text-xs text-gray-400">
+      <div className="px-3 py-1.5 flex items-center justify-between text-xs" style={{ background: 'var(--color-surface-secondary)', borderTop: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}>
         <span>{agent.stats.tasksCompleted} tasks</span>
         <span>${agent.stats.totalCost.toFixed(4)}</span>
       </div>
 
       {/* Context menu */}
       {showMenu && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-1 min-w-[140px]">
-          <button onClick={handleTest} className="w-full px-3 py-1.5 text-xs text-left text-gray-300 hover:bg-gray-700 transition-colors">
+        <div className="absolute top-full left-0 mt-1 z-50 rounded-lg shadow-xl py-1 min-w-[140px]" style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)' }}>
+          <button onClick={handleTest} className="w-full px-3 py-1.5 text-xs text-left transition-colors" style={{ color: 'var(--color-text)' }}>
             Test Connection
           </button>
-          <button onClick={handleDelete} className="w-full px-3 py-1.5 text-xs text-left text-red-400 hover:bg-gray-700 transition-colors">
+          <button onClick={handleDelete} className="w-full px-3 py-1.5 text-xs text-left text-red-400 transition-colors">
             Remove Agent
           </button>
-          <button onClick={() => setShowMenu(false)} className="w-full px-3 py-1.5 text-xs text-left text-gray-500 hover:bg-gray-700 transition-colors">
+          <button onClick={() => setShowMenu(false)} className="w-full px-3 py-1.5 text-xs text-left transition-colors" style={{ color: 'var(--color-text-muted)' }}>
             Close
           </button>
         </div>

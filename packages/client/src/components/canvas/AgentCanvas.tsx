@@ -97,9 +97,9 @@ export function AgentCanvas() {
       edgeTypes={edgeTypes}
       fitView
       proOptions={{ hideAttribution: true }}
-      className="bg-gray-950"
+      style={{ background: 'var(--color-surface)' }}
     >
-      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1e1e2e" />
+      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--color-dots)" />
       <Controls position="bottom-left" />
       <MiniMap
         position="bottom-right"
@@ -107,7 +107,7 @@ export function AgentCanvas() {
           const agent = agents.find((a) => a.id === node.id);
           return agent ? (ROLE_COLORS[agent.role] ?? '#6B7280') : '#6B7280';
         }}
-        maskColor="rgba(0, 0, 0, 0.7)"
+        maskColor="var(--color-minimap-mask)"
         pannable
         zoomable
       />

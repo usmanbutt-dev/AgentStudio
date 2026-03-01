@@ -1,18 +1,45 @@
 @import "tailwindcss";
 @import "@xyflow/react/dist/style.css";
 
+/* Light theme (default root) */
 :root {
+  --color-surface: #f8fafc;
+  --color-surface-elevated: #ffffff;
+  --color-surface-secondary: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-accent: #3b82f6;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-dots: #cbd5e1;
+  --color-minimap-mask: rgba(255, 255, 255, 0.7);
+  --color-control-bg: #ffffff;
+  --color-control-hover: #f1f5f9;
+  --color-control-text: #475569;
+}
+
+/* Dark theme */
+.dark {
   --color-surface: #0a0a0f;
   --color-surface-elevated: #111118;
+  --color-surface-secondary: #1a1a2e;
   --color-border: #1e1e2e;
   --color-accent: #3b82f6;
+  --color-text: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-dots: #1e1e2e;
+  --color-minimap-mask: rgba(0, 0, 0, 0.7);
+  --color-control-bg: #111118;
+  --color-control-hover: #1a1a2e;
+  --color-control-text: #94a3b8;
 }
 
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--color-surface);
-  color: #e2e8f0;
+  color: var(--color-text);
   overflow: hidden;
   height: 100vh;
 }
@@ -41,11 +68,16 @@ body {
 }
 
 .react-flow__controls-button {
-  background: var(--color-surface-elevated) !important;
+  background: var(--color-control-bg) !important;
   border-color: var(--color-border) !important;
-  color: #94a3b8 !important;
+  color: var(--color-control-text) !important;
 }
 
 .react-flow__controls-button:hover {
-  background: #1a1a2e !important;
+  background: var(--color-control-hover) !important;
+}
+
+/* Ensure SVG icons in controls follow theme */
+.react-flow__controls-button svg {
+  fill: var(--color-control-text) !important;
 }
