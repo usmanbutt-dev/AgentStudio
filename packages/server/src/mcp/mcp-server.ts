@@ -330,17 +330,14 @@ function createAgentStudioMcpServer(): McpServer {
   return server;
 }
 
-// --- Transport management ---
+// --- Transport management (one McpServer per session) ---
 
-const transports = new Map<string, StreamableHTTPServerTransport>();
-let mcpServer: McpServer | null = null;
-
-function getMcpServer(): McpServer {
-  if (!mcpServer) {
-    mcpServer = createAgentStudioMcpServer();
-  }
-  return mcpServer;
+interface McpSession {
+  transport: StreamableHTTPServerTransport;
+  server: McpServer;
 }
+
+const sessions = new Map<string, McpSession>();
 
 /**
  * Handle POST /mcp — main MCP endpoint for Streamable HTTP transport
@@ -348,22 +345,23 @@ function getMcpServer(): McpServer {
 export async function handleMcpPost(req: IncomingMessage, res: ServerResponse, parsedBody?: unknown) {
   const sessionId = (req.headers['mcp-session-id'] as string) || randomUUID();
 
-  let transport = transports.get(sessionId);
-  if (!transport) {
-    transport = new StreamableHTTPServerTransport({ sessionIdGenerator: () => sessionId });
-    transports.set(sessionId, transport);
+  let session = sessions.get(sessionId);
+  if (!session) {
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: () => sessionId });
+    const server = createAgentStudioMcpServer();
 
     transport.onclose = () => {
-      transports.delete(sessionId);
+      sessions.delete(sessionId);
       log.debug(`MCP session closed: ${sessionId}`);
     };
 
-    const server = getMcpServer();
     await server.connect(transport);
+    session = { transport, server };
+    sessions.set(sessionId, session);
     log.info(`MCP session started: ${sessionId}`);
   }
 
-  await transport.handleRequest(req, res, parsedBody);
+  await session.transport.handleRequest(req, res, parsedBody);
 }
 
 /**
@@ -371,9 +369,9 @@ export async function handleMcpPost(req: IncomingMessage, res: ServerResponse, p
  */
 export async function handleMcpGet(req: IncomingMessage, res: ServerResponse) {
   const sessionId = req.headers['mcp-session-id'] as string;
-  const transport = transports.get(sessionId);
-  if (transport) {
-    await transport.handleRequest(req, res);
+  const session = sessions.get(sessionId);
+  if (session) {
+    await session.transport.handleRequest(req, res);
   } else {
     res.writeHead(404);
     res.end(JSON.stringify({ error: 'Session not found. Send a POST to /mcp first.' }));
@@ -385,10 +383,10 @@ export async function handleMcpGet(req: IncomingMessage, res: ServerResponse) {
  */
 export async function handleMcpDelete(req: IncomingMessage, res: ServerResponse) {
   const sessionId = req.headers['mcp-session-id'] as string;
-  const transport = transports.get(sessionId);
-  if (transport) {
-    await transport.close();
-    transports.delete(sessionId);
+  const session = sessions.get(sessionId);
+  if (session) {
+    await session.transport.close();
+    sessions.delete(sessionId);
     res.writeHead(200);
     res.end(JSON.stringify({ ok: true }));
   } else {

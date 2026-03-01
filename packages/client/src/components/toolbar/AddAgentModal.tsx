@@ -10,6 +10,12 @@ interface Props {
   onClose: () => void;
 }
 
+const inputStyle = {
+  background: 'var(--color-surface-secondary)',
+  border: '1px solid var(--color-border)',
+  color: 'var(--color-text)',
+};
+
 export function AddAgentModal({ onClose }: Props) {
   const [name, setName] = useState('');
   const [role, setRole] = useState<AgentRole>('coder');
@@ -57,27 +63,31 @@ export function AddAgentModal({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-semibold text-gray-100 mb-4">Add Agent</h2>
+      <div className="rounded-xl w-full max-w-md p-6 shadow-2xl"
+        style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)' }}
+        onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Add Agent</h2>
 
         {/* Name */}
         <label className="block mb-3">
-          <span className="text-xs text-gray-400 mb-1 block">Name</span>
+          <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>Name</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Claude Architect"
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            style={inputStyle}
           />
         </label>
 
         {/* Provider */}
         <label className="block mb-3">
-          <span className="text-xs text-gray-400 mb-1 block">Provider</span>
+          <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>Provider</span>
           <select
             value={provider}
             onChange={(e) => handleProviderChange(e.target.value as Provider)}
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            style={inputStyle}
           >
             {providers.map((p) => (
               <option key={p} value={p}>{PROVIDER_LABELS[p]}</option>
@@ -87,21 +97,23 @@ export function AddAgentModal({ onClose }: Props) {
 
         {/* Model */}
         <label className="block mb-3">
-          <span className="text-xs text-gray-400 mb-1 block">Model</span>
+          <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>Model</span>
           <input
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            style={inputStyle}
           />
         </label>
 
         {/* Role */}
         <label className="block mb-3">
-          <span className="text-xs text-gray-400 mb-1 block">Role</span>
+          <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>Role</span>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as AgentRole)}
-            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            style={inputStyle}
           >
             {agentRoles.map((r) => (
               <option key={r} value={r}>{ROLE_LABELS[r]}</option>
@@ -112,13 +124,14 @@ export function AddAgentModal({ onClose }: Props) {
         {/* API Key */}
         {needsApiKey && (
           <label className="block mb-3">
-            <span className="text-xs text-gray-400 mb-1 block">API Key</span>
+            <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>API Key</span>
             <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-..."
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              style={inputStyle}
             />
           </label>
         )}
@@ -126,12 +139,13 @@ export function AddAgentModal({ onClose }: Props) {
         {/* Base URL */}
         {needsBaseUrl && (
           <label className="block mb-3">
-            <span className="text-xs text-gray-400 mb-1 block">Base URL</span>
+            <span className="text-xs mb-1 block" style={{ color: 'var(--color-text-secondary)' }}>Base URL</span>
             <input
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               placeholder="http://localhost:11434/v1"
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              style={inputStyle}
             />
           </label>
         )}
@@ -140,7 +154,7 @@ export function AddAgentModal({ onClose }: Props) {
 
         {/* Actions */}
         <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors">
+          <button onClick={onClose} className="px-4 py-2 text-sm transition-colors" style={{ color: 'var(--color-text-secondary)' }}>
             Cancel
           </button>
           <button

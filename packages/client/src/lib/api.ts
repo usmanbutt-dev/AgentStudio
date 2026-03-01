@@ -31,6 +31,8 @@ export const api = {
   getTasks: () => request<import('@agent-studio/shared').Task[]>('/tasks'),
   createTask: (data: import('@agent-studio/shared').CreateTaskInput) =>
     request<import('@agent-studio/shared').Task>('/tasks', { method: 'POST', body: JSON.stringify(data) }),
+  updateTask: (id: string, data: Record<string, unknown>) =>
+    request<import('@agent-studio/shared').Task>(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteTask: (id: string) =>
     request<void>(`/tasks/${id}`, { method: 'DELETE' }),
 
@@ -38,6 +40,8 @@ export const api = {
   getWorkflows: () => request<import('@agent-studio/shared').WorkflowTemplate[]>('/workflows'),
   createWorkflow: (data: import('@agent-studio/shared').CreateWorkflowInput) =>
     request<import('@agent-studio/shared').WorkflowTemplate>('/workflows', { method: 'POST', body: JSON.stringify(data) }),
+  runWorkflow: (id: string, variables?: Record<string, unknown>) =>
+    request<{ workflowRunId: string }>(`/workflows/${id}/run`, { method: 'POST', body: JSON.stringify(variables ?? {}) }),
   deleteWorkflow: (id: string) =>
     request<void>(`/workflows/${id}`, { method: 'DELETE' }),
 

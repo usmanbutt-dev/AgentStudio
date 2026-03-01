@@ -3,6 +3,8 @@ import type { ServerToClientEvents, ClientToServerEvents } from '@agent-studio/s
 import { eventBus } from '../core/event-bus.js';
 import { agentRegistry } from '../core/agent-registry.js';
 import { orchestrator } from '../core/orchestrator.js';
+import { db, schema } from '../db/index.js';
+import { eq } from 'drizzle-orm';
 import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('Socket');
@@ -39,15 +41,45 @@ export function setupSocketHandlers(io: TypedServer) {
     });
 
     socket.on('task:cancel', ({ taskId }) => {
-      log.info(`Task cancelled: ${taskId}`);
+      log.info(`Task cancel requested: ${taskId}`);
+      const row = db.select().from(schema.tasks).where(eq(schema.tasks.id, taskId)).get();
+      if (row && row.status !== 'completed' && row.status !== 'failed') {
+        db.update(schema.tasks)
+          .set({ status: 'failed', completedAt: new Date().toISOString() })
+          .where(eq(schema.tasks.id, taskId))
+          .run();
+        if (row.assigneeId) {
+          agentRegistry.setStatus(row.assigneeId, 'idle');
+        }
+        eventBus.emit('task:failed', { taskId, error: 'Cancelled by user' });
+        log.info(`Task cancelled: ${taskId}`);
+      }
     });
 
     socket.on('decision:approve', ({ decisionId }) => {
-      log.info(`Decision approved: ${decisionId}`);
+      log.info(`Decision approve requested: ${decisionId}`);
+      const row = db.select().from(schema.decisions).where(eq(schema.decisions.id, decisionId)).get();
+      if (row && row.status === 'proposed') {
+        db.update(schema.decisions)
+          .set({ status: 'approved', approvedBy: 'user' })
+          .where(eq(schema.decisions.id, decisionId))
+          .run();
+        eventBus.emit('decision:approved' as never, { decisionId } as never);
+        log.info(`Decision approved: ${decisionId}`);
+      }
     });
 
     socket.on('decision:reject', ({ decisionId }) => {
-      log.info(`Decision rejected: ${decisionId}`);
+      log.info(`Decision reject requested: ${decisionId}`);
+      const row = db.select().from(schema.decisions).where(eq(schema.decisions.id, decisionId)).get();
+      if (row && row.status === 'proposed') {
+        db.update(schema.decisions)
+          .set({ status: 'rejected', approvedBy: 'user' })
+          .where(eq(schema.decisions.id, decisionId))
+          .run();
+        eventBus.emit('decision:rejected' as never, { decisionId } as never);
+        log.info(`Decision rejected: ${decisionId}`);
+      }
     });
 
     socket.on('disconnect', () => {

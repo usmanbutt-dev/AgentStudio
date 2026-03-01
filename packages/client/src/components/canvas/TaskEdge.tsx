@@ -75,7 +75,7 @@ export function TaskEdge(props: EdgeProps & { data?: { status?: string; label?: 
             className="absolute pointer-events-none px-2 py-0.5 rounded-md text-[10px] font-medium border"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              backgroundColor: '#111118',
+              backgroundColor: 'var(--color-surface-elevated)',
               borderColor: color + '40',
               color,
             }}

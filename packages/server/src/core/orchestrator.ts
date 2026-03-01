@@ -17,6 +17,7 @@ class Orchestrator {
   private interval: ReturnType<typeof setInterval> | null = null;
   private activeTasks = new Set<string>();
   private approvalResolvers = new Map<string, (approved: boolean) => void>();
+  private retryTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
   start() {
     if (this.running) return;
@@ -36,6 +37,10 @@ class Orchestrator {
       clearInterval(this.interval);
       this.interval = null;
     }
+    for (const timer of this.retryTimers.values()) {
+      clearTimeout(timer);
+    }
+    this.retryTimers.clear();
     log.info('Orchestrator stopped');
   }
 
@@ -197,14 +202,23 @@ class Orchestrator {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       log.error(`Task "${task.title}" failed: ${errorMsg}`);
 
-      // Retry logic
+      // Retry logic with exponential backoff
       const currentRetry = task.retryCount + 1;
       if (currentRetry <= task.maxRetries) {
-        log.info(`Retrying task "${task.title}" (${currentRetry}/${task.maxRetries})`);
+        const delayMs = Math.min(1000 * Math.pow(2, currentRetry - 1), 30000); // 1s, 2s, 4s, ... max 30s
+        log.info(`Retrying task "${task.title}" in ${delayMs / 1000}s (${currentRetry}/${task.maxRetries})`);
         db.update(schema.tasks)
-          .set({ status: 'pending', retryCount: currentRetry, assigneeId: null })
+          .set({ status: 'queued', retryCount: currentRetry, assigneeId: null })
           .where(eq(schema.tasks.id, task.id))
           .run();
+        const timer = setTimeout(() => {
+          this.retryTimers.delete(task.id);
+          db.update(schema.tasks)
+            .set({ status: 'pending' })
+            .where(eq(schema.tasks.id, task.id))
+            .run();
+        }, delayMs);
+        this.retryTimers.set(task.id, timer);
       } else {
         db.update(schema.tasks)
           .set({ status: 'failed', completedAt: new Date().toISOString() })

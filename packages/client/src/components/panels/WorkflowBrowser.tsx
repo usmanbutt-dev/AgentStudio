@@ -18,25 +18,13 @@ export function WorkflowBrowser({ onClose }: Props) {
   }, []);
 
   const handleRun = async (workflow: WorkflowTemplate) => {
-    // Create the first task in the workflow
     const firstStep = workflow.steps[0];
     if (!firstStep) return;
 
     const promptInput = prompt(`Enter input for "${workflow.name}":`);
     if (!promptInput) return;
 
-    await api.createTask({
-      title: `${workflow.name} — ${firstStep.taskTemplate.type}`,
-      description: `Step 1 of workflow: ${workflow.name}`,
-      type: firstStep.taskTemplate.type,
-      priority: 'medium',
-      input: {
-        prompt: firstStep.taskTemplate.promptTemplate.replace('{{input}}', promptInput),
-        context: [],
-      },
-      approvalRequired: firstStep.taskTemplate.approvalRequired,
-    });
-
+    await api.runWorkflow(workflow.id, { input: promptInput });
     onClose();
   };
 
@@ -47,34 +35,37 @@ export function WorkflowBrowser({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg p-6 shadow-2xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl w-full max-w-lg p-6 shadow-2xl max-h-[80vh] overflow-y-auto"
+        style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)' }}
+        onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-100">Workflow Templates</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-sm">Close</button>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>Workflow Templates</h2>
+          <button onClick={onClose} className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Close</button>
         </div>
 
         {loading ? (
-          <p className="text-sm text-gray-500">Loading...</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading...</p>
         ) : workflows.length === 0 ? (
-          <p className="text-sm text-gray-500">No workflow templates yet.</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No workflow templates yet.</p>
         ) : (
           <div className="space-y-3">
             {workflows.map((w) => (
-              <div key={w.id} className="bg-gray-800/50 border border-gray-700/50 rounded-lg p-3">
+              <div key={w.id} className="rounded-lg p-3" style={{ background: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)' }}>
                 <div className="flex items-start justify-between mb-1">
-                  <h3 className="text-sm font-medium text-gray-100">{w.name}</h3>
-                  <span className="text-xs text-gray-500">{w.steps.length} steps</span>
+                  <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{w.name}</h3>
+                  <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{w.steps.length} steps</span>
                 </div>
-                <p className="text-xs text-gray-400 mb-2">{w.description}</p>
+                <p className="text-xs mb-2" style={{ color: 'var(--color-text-secondary)' }}>{w.description}</p>
 
                 {/* Step visualization */}
                 <div className="flex items-center gap-1 mb-3 flex-wrap">
                   {w.steps.map((step, i) => (
                     <div key={step.id} className="flex items-center gap-1">
-                      <span className="text-xs px-2 py-0.5 bg-gray-700 rounded text-gray-300 capitalize">
+                      <span className="text-xs px-2 py-0.5 rounded capitalize"
+                        style={{ background: 'var(--color-surface)', color: 'var(--color-text-secondary)' }}>
                         {step.role}
                       </span>
-                      {i < w.steps.length - 1 && <span className="text-gray-600 text-xs">→</span>}
+                      {i < w.steps.length - 1 && <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{'\u2192'}</span>}
                     </div>
                   ))}
                 </div>
@@ -88,7 +79,8 @@ export function WorkflowBrowser({ onClose }: Props) {
                   </button>
                   <button
                     onClick={() => handleDelete(w.id)}
-                    className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors"
+                    className="px-3 py-1 text-xs rounded-md transition-colors"
+                    style={{ background: 'var(--color-surface)', color: 'var(--color-text-secondary)' }}
                   >
                     Delete
                   </button>

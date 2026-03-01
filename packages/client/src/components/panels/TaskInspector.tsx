@@ -35,54 +35,56 @@ export function TaskInspector() {
   const priorityStyle = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.medium;
 
   return (
-    <div className="w-80 bg-gray-900/80 backdrop-blur border-l border-gray-800 flex flex-col shrink-0 overflow-y-auto">
+    <div className="w-80 backdrop-blur flex flex-col shrink-0 overflow-y-auto" style={{ background: 'var(--color-surface-elevated)', borderLeft: '1px solid var(--color-border)' }}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-100 truncate pr-2">{task.title}</h3>
-          <button onClick={() => selectTask(null)} className="text-gray-500 hover:text-gray-300 text-xs shrink-0">Close</button>
+          <h3 className="text-sm font-semibold truncate pr-2" style={{ color: 'var(--color-text)' }}>{task.title}</h3>
+          <button onClick={() => selectTask(null)} className="text-xs shrink-0" style={{ color: 'var(--color-text-muted)' }}>Close</button>
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyle}`}>
             {task.status.replace(/_/g, ' ')}
           </span>
           <span className={`text-xs font-medium ${priorityStyle}`}>{task.priority}</span>
-          <span className="text-xs text-gray-500">{task.type}</span>
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{task.type}</span>
         </div>
       </div>
 
       {/* Assignee */}
       {assignee && (
-        <div className="px-4 py-3 border-b border-gray-800">
-          <span className="text-xs text-gray-500">Assigned to</span>
-          <p className="text-sm text-gray-200">{assignee.name}</p>
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Assigned to</span>
+          <p className="text-sm" style={{ color: 'var(--color-text)' }}>{assignee.name}</p>
         </div>
       )}
 
       {/* Description */}
       {task.description && (
-        <div className="px-4 py-3 border-b border-gray-800">
-          <span className="text-xs text-gray-500">Description</span>
-          <p className="text-xs text-gray-300 mt-1 whitespace-pre-wrap">{task.description}</p>
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Description</span>
+          <p className="text-xs mt-1 whitespace-pre-wrap" style={{ color: 'var(--color-text-secondary)' }}>{task.description}</p>
         </div>
       )}
 
       {/* Input prompt */}
-      <div className="px-4 py-3 border-b border-gray-800">
-        <span className="text-xs text-gray-500">Prompt</span>
-        <div className="text-xs text-gray-300 bg-gray-800/50 rounded-lg p-2 mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap font-mono">
+      <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Prompt</span>
+        <div className="text-xs rounded-lg p-2 mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap font-mono"
+          style={{ color: 'var(--color-text-secondary)', background: 'var(--color-surface-secondary)' }}>
           {task.input.prompt}
         </div>
       </div>
 
       {/* Live streaming output */}
       {streamOutput && (
-        <div className="px-4 py-3 border-b border-gray-800">
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs text-blue-400">Live Output</span>
             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
           </div>
-          <div className="text-xs text-gray-300 bg-gray-800/50 rounded-lg p-2 max-h-48 overflow-y-auto whitespace-pre-wrap font-mono leading-relaxed">
+          <div className="text-xs rounded-lg p-2 max-h-48 overflow-y-auto whitespace-pre-wrap font-mono leading-relaxed"
+            style={{ color: 'var(--color-text-secondary)', background: 'var(--color-surface-secondary)' }}>
             {streamOutput}
           </div>
         </div>
@@ -90,9 +92,10 @@ export function TaskInspector() {
 
       {/* Completed output */}
       {task.output.result && task.status === 'completed' && (
-        <div className="px-4 py-3 border-b border-gray-800">
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <span className="text-xs text-green-400">Output</span>
-          <div className="text-xs text-gray-300 bg-gray-800/50 rounded-lg p-2 mt-1 max-h-64 overflow-y-auto whitespace-pre-wrap font-mono leading-relaxed">
+          <div className="text-xs rounded-lg p-2 mt-1 max-h-64 overflow-y-auto whitespace-pre-wrap font-mono leading-relaxed"
+            style={{ color: 'var(--color-text-secondary)', background: 'var(--color-surface-secondary)' }}>
             {task.output.result}
           </div>
         </div>
@@ -100,27 +103,27 @@ export function TaskInspector() {
 
       {/* Token usage & cost */}
       {(task.output.tokenUsage.input > 0 || task.output.tokenUsage.output > 0) && (
-        <div className="px-4 py-3 border-b border-gray-800">
-          <span className="text-xs text-gray-500">Usage</span>
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Usage</span>
           <div className="grid grid-cols-3 gap-2 mt-1 text-xs">
-            <div className="bg-gray-800/50 rounded p-1.5 text-center">
-              <div className="text-gray-500">In</div>
-              <div className="text-gray-200">{task.output.tokenUsage.input.toLocaleString()}</div>
+            <div className="rounded p-1.5 text-center" style={{ background: 'var(--color-surface-secondary)' }}>
+              <div style={{ color: 'var(--color-text-muted)' }}>In</div>
+              <div style={{ color: 'var(--color-text)' }}>{task.output.tokenUsage.input.toLocaleString()}</div>
             </div>
-            <div className="bg-gray-800/50 rounded p-1.5 text-center">
-              <div className="text-gray-500">Out</div>
-              <div className="text-gray-200">{task.output.tokenUsage.output.toLocaleString()}</div>
+            <div className="rounded p-1.5 text-center" style={{ background: 'var(--color-surface-secondary)' }}>
+              <div style={{ color: 'var(--color-text-muted)' }}>Out</div>
+              <div style={{ color: 'var(--color-text)' }}>{task.output.tokenUsage.output.toLocaleString()}</div>
             </div>
-            <div className="bg-gray-800/50 rounded p-1.5 text-center">
-              <div className="text-gray-500">Cost</div>
-              <div className="text-gray-200">${task.output.cost.toFixed(4)}</div>
+            <div className="rounded p-1.5 text-center" style={{ background: 'var(--color-surface-secondary)' }}>
+              <div style={{ color: 'var(--color-text-muted)' }}>Cost</div>
+              <div style={{ color: 'var(--color-text)' }}>${task.output.cost.toFixed(4)}</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Timestamps */}
-      <div className="px-4 py-3 text-xs text-gray-500 space-y-1">
+      <div className="px-4 py-3 text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>
         <div>Created: {new Date(task.createdAt).toLocaleTimeString()}</div>
         {task.startedAt && <div>Started: {new Date(task.startedAt).toLocaleTimeString()}</div>}
         {task.completedAt && <div>Finished: {new Date(task.completedAt).toLocaleTimeString()}</div>}

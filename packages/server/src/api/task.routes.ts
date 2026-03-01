@@ -87,6 +87,28 @@ taskRouter.post('/', (req, res) => {
   res.status(201).json(task);
 });
 
+// PATCH /api/tasks/:id
+taskRouter.patch('/:id', (req, res) => {
+  const row = db.select().from(schema.tasks).where(eq(schema.tasks.id, req.params.id)).get();
+  if (!row) return res.status(404).json({ error: 'Task not found' });
+
+  const updates: Record<string, unknown> = {};
+  const allowedFields = ['title', 'description', 'type', 'priority', 'assigneeId', 'approvalRequired'] as const;
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      updates[field] = req.body[field];
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: 'No valid fields to update' });
+  }
+
+  db.update(schema.tasks).set(updates).where(eq(schema.tasks.id, req.params.id)).run();
+  const updated = db.select().from(schema.tasks).where(eq(schema.tasks.id, req.params.id)).get()!;
+  res.json(rowToTask(updated));
+});
+
 // DELETE /api/tasks/:id
 taskRouter.delete('/:id', (req, res) => {
   const row = db.select().from(schema.tasks).where(eq(schema.tasks.id, req.params.id)).get();

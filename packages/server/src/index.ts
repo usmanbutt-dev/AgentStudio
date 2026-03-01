@@ -8,6 +8,7 @@ import { apiRouter } from './api/routes.js';
 import { setupSocketHandlers } from './socket/handlers.js';
 import { seedDefaults } from './db/seed.js';
 import { orchestrator } from './core/orchestrator.js';
+import { blackboard } from './core/blackboard.js';
 import './core/workflow-engine.js'; // Initialize workflow event listeners
 import { handleMcpPost, handleMcpGet, handleMcpDelete } from './mcp/mcp-server.js';
 import { createLogger } from './utils/logger.js';
@@ -37,8 +38,9 @@ setupSocketHandlers(io);
 // Seed default data
 seedDefaults();
 
-// Start orchestrator
+// Start orchestrator & blackboard cleanup
 orchestrator.start();
+blackboard.startCleanup();
 
 // Start server
 httpServer.listen(PORT, () => {
