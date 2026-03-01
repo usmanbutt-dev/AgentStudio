@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+*.log
+.vite/
+.turbo/
+coverage/
